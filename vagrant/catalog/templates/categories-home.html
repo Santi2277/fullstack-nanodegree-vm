@@ -1,0 +1,24 @@
+<!-- For rendering it needs param categories-->
+<html>
+<head></head>
+
+	<body>
+
+  <div class = 'categories'>
+    <h1>Categories</h1>
+    <a href = '/categories/new/'>Add New Category</a>
+
+    <!-- List all categories -->
+	   {% for i in categories %}
+        <!-- test version, future version will be i.name here-->
+        <p>{{i}}</p>
+     {% endfor %}
+
+  </div>
+
+</body>
+
+
+
+
+</html>
