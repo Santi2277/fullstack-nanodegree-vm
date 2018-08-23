@@ -25,7 +25,7 @@ def showCategories():
 def showCategory(category_id):
     # find category and its items to show in category template
     category = session.query(Category).filter_by(id=category_id).one()
-    items = session.query(Item).filter_by(category_id=category.id)
+    items = session.query(Item).filter_by(category_id=category.id).all()
     return render_template('category.html', category = category, items = items)
 
 # 3) New category
@@ -78,22 +78,62 @@ def deleteCategory(category_id):
 # 6) Item page
 @app.route('/categories/<int:category_id>/items/<int:item_id>/')
 def showItem(category_id, item_id):
-    return "show item description"
+    # find item descriptionpage
+    category = session.query(Category).filter_by(id=category_id).one()
+    item = session.query(Item).filter_by(id=item_id).one()
+    return render_template('item.html', category = category, item = item)
 
 # 7) New item
-@app.route('/categories/items/<int:item_id>/new/')
-def newItem(item_id):
-    return "new item"
+@app.route('/categories/<int:category_id>/items/new/', methods=['GET', 'POST'])
+def newItem(category_id):
+    # POST method add the new item then go to homepage
+    # category = session.query(Category).filter_by(id = category_id).one()
+    if request.method == 'POST':
+        category = session.query(Category).filter_by(id = category_id).one()
+        user = session.query(User).filter_by(id = category.user_id).one()
+        newItem = Item(name = ""+request.form['name'], description = ""+request.form['description'], user = user, category = category)
+        session.add(newItem)
+        session.commit()
+        # flash("Category added")
+        return redirect(url_for('showCategory', category_id=category_id))
+    # GET method show add new category template
+    else:
+        category = session.query(Category).filter_by(id = category_id).one()
+        return render_template('item-new.html', category = category)
 
 # 8) Edit item
-@app.route('/categories/items/<int:item_id>/edit/')
-def editItem(item_id):
-    return "edit item"
+@app.route('/categories/<int:category_id>/items/<int:item_id>/edit/', methods=['GET', 'POST'])
+def editItem(category_id, item_id):
+    edititem = session.query(Item).filter_by(id = item_id).one()
+    # POST edit the item with the form given and return to category
+    if request.method == 'POST':
+        category = session.query(Category).filter_by(name = ""+request.form['categorybox']).one()
+        edititem.name = ""+request.form['name']
+        edititem.description = ""+request.form['description']
+        edititem.category = category
+        session.add(edititem)
+        session.commit()
+        # flash("Category edited")
+        return redirect(url_for('showItem', category_id=category_id, item_id=item_id ))
+    # GET pass item to edit item template
+    else:
+        category1 = session.query(Category).filter_by(id = category_id).one()
+        categories = session.query(Category).all()
+        return render_template('item-edit.html', item = edititem, category=category1, categories = categories)
 
 # 9) Delete item
-@app.route('/categories/<int:category_id>/items/<int:item_id>/delete/')
+@app.route('/categories/<int:category_id>/items/<int:item_id>/delete/', methods=['GET', 'POST'])
 def deleteItem(category_id, item_id):
-    return "delete item"
+    deleteitem = session.query(Item).filter_by(id = item_id).one()
+    # POST delete that item and return to homepage
+    if request.method == 'POST':
+        session.delete(deleteitem)
+        session.commit()
+        # flash("Item deleted")
+        return redirect(url_for('showCategory', category_id=category_id))
+    # GET pass item to delete item template
+    else:
+        return render_template('item-delete.html', item = deleteitem, category_id=category_id)
 
 # 10) JSON endpoint
 @app.route('/catalog/JSON/')

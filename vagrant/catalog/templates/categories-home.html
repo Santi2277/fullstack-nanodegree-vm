@@ -10,8 +10,8 @@
 
     <!-- List all categories -->
 	   {% for i in categories %}
-        
-        <p>{{i.name}}</p>
+
+        <p>{{i.name}} -> <a href = '/categories/{{i.id}}/'>go</a></p>
      {% endfor %}
 
   </div>

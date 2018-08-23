@@ -1,0 +1,36 @@
+
+<html>
+<body>
+<h1> Edit {{item.name}}</h1>
+
+<form action="{{url_for('editItem', category_id=category.id, item_id=item.id )}}" method = 'POST'>
+
+<!-- Enter the value it has now by default-->
+<p>Name:</p>
+<input type='text' size='30' name='name' value='{{item.name}}'>
+
+<!-- Should be text area element-->
+<p>Description:</p>
+<textarea name='description'>{{item.description}}</textarea>
+
+<p>Category:</p>
+<!-- Select box for categories-->
+<select id="simple" name="categorybox">
+  {% for i in categories %}
+    {% if i.name == category.name %}
+    <option selected>{{i.name}}</option>
+    {% else %}
+    <option>{{i.name}}</option>
+    {% endif %}
+  {% endfor %}
+</select>
+</br>
+</br>
+<input type='submit' value='Edit'>
+
+<!-- It should go to -->
+<a href='{{url_for('showItem', category_id=category.id, item_id=item.id) }}'>Cancel</a>
+</form>
+
+</body>
+</html>

@@ -6,14 +6,15 @@
     <h1>{{category.name}}</h1>
     <a href = '/categories/{{category.id}}/edit/'>Edit Category</a>
     <a href = '/categories/{{category.id}}/delete/'>Delete Category</a>
+    <h2>Items:</h2>
     <!-- List all items in that category -->
 	   {% for i in items %}
 
-        <p>{{i.name}}</p>
+        <p>{{i.name}} -> <a href = '/categories/{{category.id}}/items/{{i.id}}/'>go</a></p>
      {% endfor %}
 
-
-
+<p><a href = '/categories/{{category.id}}/items/new/'>add item</a></p>
+<p><a href = '/categories/'>back</a></p>
 </body>
 
 
