@@ -1,0 +1,22 @@
+<html>
+<head></head>
+
+	<body>
+
+    <h1>{{category.name}}</h1>
+    <a href = '/categories/{{category.id}}/edit/'>Edit Category</a>
+    <a href = '/categories/{{category.id}}/delete/'>Delete Category</a>
+    <!-- List all items in that category -->
+	   {% for i in items %}
+
+        <p>{{i.name}}</p>
+     {% endfor %}
+
+
+
+</body>
+
+
+
+
+</html>
