@@ -33,7 +33,8 @@ def showCategory(category_id):
     # find category and its items to show in category template
     category = session.query(Category).filter_by(id=category_id).one()
     items = session.query(Item).filter_by(category_id=category.id).all()
-    return render_template('category.html', category = category, items = items)
+    itemssize = len(items)
+    return render_template('category.html', category = category, items = items, itemssize=itemssize)
 
 # 3) New category
 @app.route('/categories/new/', methods=['GET', 'POST'])
@@ -77,8 +78,14 @@ def editCategory(category_id):
 @app.route('/categories/<int:category_id>/delete/', methods=['GET', 'POST'])
 def deleteCategory(category_id):
     deletecategory = session.query(Category).filter_by(id = category_id).one()
+    # you must delete items of that category
+    categoryitems = session.query(Item).filter_by(category_id = category_id).all()
     # POST delete that category and return to homepage
     if request.method == 'POST':
+        # delete items of that category
+        for ci in categoryitems:
+            session.delete(ci)
+            session.commit()
         session.delete(deletecategory)
         session.commit()
         # flash("Category deleted")
