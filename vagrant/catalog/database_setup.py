@@ -1,10 +1,11 @@
 # CONFIG1
 import os
 import sys
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
+
 
 # let sqlalchemy know that our classes correspond to db tables
 Base = declarative_base()
@@ -39,6 +40,7 @@ class Item(Base):
     category = relationship(Category)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
+    created_at = Column(DateTime)
 
 # CONFIG2
 # create database

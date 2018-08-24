@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, Item
+import datetime
 
 # using flask micro-framework, creating app
 app = Flask(__name__)
@@ -17,8 +18,14 @@ session = DBSession()
 @app.route('/categories/')
 def showCategories():
     # find all categories to pass to the main template
+    engine = create_engine('sqlite:///itemcatalog.db')
+    Base.metadata.bind = engine
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+
     categories = session.query(Category).all()
-    return render_template('categories-home.html', categories = categories)
+    latestitems = session.query(Item).order_by("created_at desc").limit(3)
+    return render_template('categories-home.html', categories = categories, latestitems=latestitems)
 
 # 2) Category page
 @app.route('/categories/<int:category_id>/')
@@ -32,6 +39,11 @@ def showCategory(category_id):
 @app.route('/categories/new/', methods=['GET', 'POST'])
 def newCategory():
     # POST method add the new category then go to homepage
+    engine = create_engine('sqlite:///itemcatalog.db')
+    Base.metadata.bind = engine
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+
     if request.method == 'POST':
         newUser = User(name="Santi")
         session.add(newUser)
@@ -88,10 +100,15 @@ def showItem(category_id, item_id):
 def newItem(category_id):
     # POST method add the new item then go to homepage
     # category = session.query(Category).filter_by(id = category_id).one()
+    engine = create_engine('sqlite:///itemcatalog.db')
+    Base.metadata.bind = engine
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+
     if request.method == 'POST':
         category = session.query(Category).filter_by(id = category_id).one()
         user = session.query(User).filter_by(id = category.user_id).one()
-        newItem = Item(name = ""+request.form['name'], description = ""+request.form['description'], user = user, category = category)
+        newItem = Item(name = ""+request.form['name'], description = ""+request.form['description'], user = user, category = category, created_at = datetime.datetime.now())
         session.add(newItem)
         session.commit()
         # flash("Category added")

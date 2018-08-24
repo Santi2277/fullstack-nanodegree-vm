@@ -15,6 +15,12 @@
      {% endfor %}
 
   </div>
+	<h2>Latest Items:</h2>
+	{% for i in latestitems %}
+			 <p>{{i.name}} ({{i.category.name}})</p>
+	{% endfor %}
+
+
 
 </body>
 
