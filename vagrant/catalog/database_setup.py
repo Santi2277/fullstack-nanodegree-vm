@@ -20,6 +20,16 @@ class User(Base):
     email = Column(String(250))
     picture = Column(String(250))
 
+    # for JSON
+    @property
+    def serialize(self):
+        return {
+            'name': self.name,
+            'id': self.id,
+            'email': self.email,
+            'picture': self.picture,
+        }
+
 class Category(Base):
     # table representation
     __tablename__ = 'category'
@@ -28,6 +38,17 @@ class Category(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
+
+
+    # for JSON
+    @property
+    def serialize(self):
+        #return dict(name=self.name, id=self.id, items=[])
+        return {
+            'name': self.name,
+            'id': self.id,
+            'items': [],
+        }
 
 class Item(Base):
     # table representation
@@ -41,6 +62,19 @@ class Item(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
     created_at = Column(DateTime)
+
+    # for JSON
+    @property
+    def serialize(self):
+        return {
+            'name': self.name,
+            'description': self.description,
+            'id': self.id,
+            'created_at': self.created_at,
+        }
+
+
+
 
 # CONFIG2
 # create database

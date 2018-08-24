@@ -13,6 +13,7 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+
 # 1) Show homepage (categories)
 @app.route('/')
 @app.route('/categories/')
@@ -31,6 +32,11 @@ def showCategories():
 @app.route('/categories/<int:category_id>/')
 def showCategory(category_id):
     # find category and its items to show in category template
+    engine = create_engine('sqlite:///itemcatalog.db')
+    Base.metadata.bind = engine
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+
     category = session.query(Category).filter_by(id=category_id).one()
     items = session.query(Item).filter_by(category_id=category.id).all()
     itemssize = len(items)
@@ -162,7 +168,16 @@ def deleteItem(category_id, item_id):
 # 10) JSON endpoint
 @app.route('/catalog/JSON/')
 def catalogJSON():
-    return "JSON catalog"
+    categories = session.query(Category).all()
+    Categories = []
+    for i in categories:
+        Categories.append(i.serialize)
+    for c in Categories:
+        # TO FILTER
+        items = session.query(Item).filter_by(category_id = c['id']).all()
+        Items=[i.serialize for i in items]
+        c['items'] = Items
+    return jsonify(Categories=Categories)
 
 
 
