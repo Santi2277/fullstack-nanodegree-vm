@@ -1,23 +1,25 @@
+<!-- New Item template -->
 <html>
 <head>
+  <!-- css -->
   <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
 </head>
 
 <body>
-<h1> New {{category.name}} Item </h1>
+  <!-- Content -->
+  <h1> New {{category.name}} Item </h1>
+  <!-- form -->
+  <form action="{{url_for('newItem', category_id=category.id)}}" method = 'POST'>
 
+    <p style="padding-left: 0px">Name:</p>
+    <input type='text' size='30' name='name'>
 
-<form action="{{url_for('newItem', category_id=category.id)}}" method = 'POST'>
+    <p style="padding-left: 0px">Description:</p>
+    <input type='text' size='30' name='description'>
 
-<p style="padding-left: 0px">Name:</p>
-<input type='text' size='30' name='name'>
+    <input type='submit' value='Create'>
 
-<p style="padding-left: 0px">Description:</p>
-<input type='text' size='30' name='description'>
-
-<input type='submit' value='Create'>
-
-</form>
-<p style="padding-left: 0px"><a href = '/categories/{{category.id}}/' style="color:#cc3300">back</a></p>
+  </form>
+  <p style="padding-left: 0px"><a href = '/categories/{{category.id}}/' style="color:#cc3300">back</a></p>
 </body>
 </html>

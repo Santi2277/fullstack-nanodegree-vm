@@ -1,23 +1,19 @@
+<!-- Users template (for web manager additional info) -->
 <html>
 <head>
+  <!-- css -->
   <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
 </head>
 
 	<body>
-
+    <!-- Content -->
     <h1>Users</h1>
-
     <!-- List all users -->
 	   {% for i in users %}
-
         <p>Name: {{i.name}} E-mail: {{i.email}}</p>
      {% endfor %}
 
-
-<p><a href = '/' style="color:#cc3300">back</a></p>
+     <p><a href = '/' style="color:#cc3300">back</a></p>
 </body>
-
-
-
 
 </html>

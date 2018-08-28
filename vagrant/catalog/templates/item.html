@@ -1,19 +1,21 @@
+<!-- Item template -->
 <html>
 <head>
+  <!-- css -->
   <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
 </head>
 
 	<body>
-
+    <!-- Content -->
     <h1>{{item.name}}</h1>
 
     <h2 style="color:black">{{item.description}}</h2>
-
+    <!-- show edit and delete buttons if user is the creator -->
 		{% if creator == 1 %}
 			<p style="padding-left: 0px"><a href = '/categories/{{category.id}}/items/{{item.id}}/edit/' style="color:#99ffcc">Edit</a> <a href = '/categories/{{category.id}}/items/{{item.id}}/delete/' style="color:#cc3300">Delete</a></p>
 		{% endif %}
 
-<p style="padding-left: 0px"><a href = '/categories/{{category.id}}/' style="color:#cc3300">back</a></p>
+    <p style="padding-left: 0px"><a href = '/categories/{{category.id}}/' style="color:#cc3300">back</a></p>
 </body>
 
 

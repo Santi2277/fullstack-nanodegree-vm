@@ -1,40 +1,39 @@
-
+<!-- Edit Item template -->
 <html>
 <head>
+  <!-- css -->
   <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
 </head>
 
 <body>
-<h1> Edit {{item.name}}</h1>
+  <!-- Content -->
+  <h1> Edit {{item.name}}</h1>
+  <!-- form -->
+  <form action="{{url_for('editItem', category_id=category.id, item_id=item.id )}}" method = 'POST'>
 
-<form action="{{url_for('editItem', category_id=category.id, item_id=item.id )}}" method = 'POST'>
+    <p style="padding-left: 0px">Name:</p>
+    <input type='text' size='30' name='name' value='{{item.name}}'>
 
-<!-- Enter the value it has now by default-->
-<p style="padding-left: 0px">Name:</p>
-<input type='text' size='30' name='name' value='{{item.name}}'>
+    <p style="padding-left: 0px">Description:</p>
+    <textarea name='description'>{{item.description}}</textarea>
 
-<!-- Should be text area element-->
-<p style="padding-left: 0px">Description:</p>
-<textarea name='description'>{{item.description}}</textarea>
-
-<p style="padding-left: 0px">Category:</p>
-<!-- Select box for categories-->
-<select id="simple" name="categorybox">
-  {% for i in categories %}
-    {% if i.name == category.name %}
-    <option selected>{{i.name}}</option>
-    {% else %}
-    <option>{{i.name}}</option>
-    {% endif %}
-  {% endfor %}
-</select>
-</br>
-</br>
-<input type='submit' value='Edit'>
-
-<!-- It should go to -->
-<a href='{{url_for('showItem', category_id=category.id, item_id=item.id) }}' style="color:#cc3300">Cancel</a>
-</form>
+    <p style="padding-left: 0px">Category:</p>
+    <!-- Select box for categories-->
+    <select id="simple" name="categorybox">
+    {% for i in categories %}
+      {% if i.name == category.name %}
+        <option selected>{{i.name}}</option>
+      {% else %}
+        <option>{{i.name}}</option>
+      {% endif %}
+    {% endfor %}
+    </select>
+    </br>
+    </br>
+    <input type='submit' value='Edit'>
+    <!-- It should go to -->
+    <a href='{{url_for('showItem', category_id=category.id, item_id=item.id) }}' style="color:#cc3300">Cancel</a>
+  </form>
 
 </body>
 </html>

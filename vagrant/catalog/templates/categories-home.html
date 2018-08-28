@@ -1,13 +1,15 @@
-<!-- For rendering it needs param categories-->
+<!-- Categories Template-->
 <html>
 <head>
+	<!-- necessary for css styling, google auth, ajax request-->
 	<meta name="google-signin-client_id" content="571631543423-6celfpf7k764o9u85jfhv10q48o3nqbo.apps.googleusercontent.com">
 	<script src="https://apis.google.com/js/platform.js" async defer></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
 </head>
 	<body>
-    <h1>Categories</h1>
+		<!-- Content to show -->
+		<h1>Categories</h1>
 		<section class="container">
 			<div class = 'listcat'>
     		<!-- List all categories -->
@@ -16,43 +18,45 @@
       	{% endfor %}
 	 		</div>
 			<div class = 'latitems'>
+				<!-- List latest items -->
 				<h2>Latest Items:</h2>
 				{% for i in latestitems %}
 			 		<p><a href = '/categories/{{i.category.id}}/items/{{i.id}}/' style="color:black">{{i.name}} ({{i.category.name}})</a></p>
 				{% endfor %}
 			</div>
-	</section>
-	</br>
-	<div class="g-signin2" id="signinButton" data-onsuccess="onSignIn"></div>
+		</section>
+		</br>
+		<!-- google signin button-->
+		<div class="g-signin2" id="signinButton" data-onsuccess="onSignIn"></div>
 
-<!-- javascript-->
-<script>
-	function onSignIn(googleUser) {
-		// hide button
-		$('#signinButton').hide();
-		$('#signoutButton').show();
-		var profile = googleUser.getBasicProfile();
-		//alert('Name: ' + profile.getName());
+		<!-- javascript for signin action-->
+		<script>
+		function onSignIn(googleUser) {
+			// hide button
+			$('#signinButton').hide();
+			$('#signoutButton').show();
+			var profile = googleUser.getBasicProfile();
+			//alert('Name: ' + profile.getName());
+			$.post('/gconnect', ""+profile.getName()+"#~#"+profile.getEmail(), function(data, status){});
+		}
+		</script>
+		<!-- logout button-->
+		<a href="#" onclick="signOut();" id="signoutButton" style="color:#cc3300"><img src="https://png.icons8.com/ios/1600/logout-rounded-filled.png" width="30" height="30"> Signout</a>
 
-		$.post('/gconnect', ""+profile.getName()+"#~#"+profile.getEmail(), function(data, status){});
-	}
-</script>
-
-	<a href="#" onclick="signOut();" id="signoutButton" style="color:#cc3300"><img src="https://png.icons8.com/ios/1600/logout-rounded-filled.png" width="30" height="30"> Signout</a>
-
-<!-- javascript -->
-<script>
-	$('#signoutButton').hide();
-	function signOut() {
-		$('#signinButton').show();
-		var auth2 = gapi.auth2.getAuthInstance();
-    auth2.signOut().then(function () {
-      console.log('User signed out.');
-    });
-		$.post('/gdisconnect', null, function(data, status){});
+		<!-- javascript logout action-->
+		<script>
+		//don't show logout button initially
 		$('#signoutButton').hide();
-	}
-</script>
+		function signOut() {
+			$('#signinButton').show();
+			var auth2 = gapi.auth2.getAuthInstance();
+    	auth2.signOut().then(function () {
+      	console.log('User signed out.');
+    	});
+			$.post('/gdisconnect', null, function(data, status){});
+			$('#signoutButton').hide();
+		}
+		</script>
 
 </body>
 
