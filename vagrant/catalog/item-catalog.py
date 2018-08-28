@@ -3,6 +3,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, Item
 import datetime
+from flask import session as login_session
+import random
+import string
 
 # using flask micro-framework, creating app
 app = Flask(__name__)
@@ -14,6 +17,37 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
+# User identification with google
+@app.route('/gconnect', methods=['POST'])
+def gconnect():
+    # get username and email
+    data = request.get_data()
+    splitdata = data.split("#~#")
+    username = splitdata[0]
+    email = splitdata[1]
+    login_session['username'] = username
+    login_session['email'] = email
+    # connect to database
+    engine = create_engine('sqlite:///itemcatalog.db')
+    Base.metadata.bind = engine
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+    # add user if it doesn't exists (in database)
+    userfind = session.query(User).filter_by(email=email).all()
+    if len(userfind) == 0:
+        newUser = User(name=username, email=email)
+        session.add(newUser)
+        session.commit()
+    return ""+login_session['username']+"connected"
+
+# Disconnect user login session (google)
+@app.route('/gdisconnect', methods=['POST'])
+def gdisconnect():
+    login_session['username'] = None
+    login_session['email'] = None
+    login_session['login'] = 0
+    return "no user connected now"
+
 # 1) Show homepage (categories)
 @app.route('/')
 @app.route('/categories/')
@@ -23,7 +57,6 @@ def showCategories():
     Base.metadata.bind = engine
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
-
     categories = session.query(Category).all()
     latestitems = session.query(Item).order_by("created_at desc").limit(3)
     return render_template('categories-home.html', categories = categories, latestitems=latestitems)
@@ -40,6 +73,8 @@ def showCategory(category_id):
     category = session.query(Category).filter_by(id=category_id).one()
     items = session.query(Item).filter_by(category_id=category.id).all()
     itemssize = len(items)
+
+
     return render_template('category.html', category = category, items = items, itemssize=itemssize)
 
 # 3) New category
@@ -52,14 +87,17 @@ def newCategory():
     session = DBSession()
 
     if request.method == 'POST':
-        newUser = User(name="Santi")
-        session.add(newUser)
-        session.commit()
-        newCategory = Category(name = ""+request.form['name'], user = newUser)
-        session.add(newCategory)
-        session.commit()
-        # flash("Category added")
-        return redirect(url_for('showCategories'))
+        if ('username' not in login_session):
+            return redirect('/')
+        else:
+            if login_session['username'] == None:
+                return redirect('/')
+            else:
+                user = session.query(User).filter_by(name = login_session['username']).one()
+                newCategory = Category(name = ""+request.form['name'], user = user)
+                session.add(newCategory)
+                session.commit()
+                return redirect(url_for('showCategories'))
     # GET method show add new category template
     else:
         return render_template('category-new.html')
@@ -71,6 +109,7 @@ def editCategory(category_id):
     editcategory = session.query(Category).filter_by(id = category_id).one()
     # POST edit the category with the form given and return to homepage
     if request.method == 'POST':
+        #if (editcategory.user.email == login_session['email']) and (editcategory.user.name == login_session['name']):
         editcategory.name = ""+request.form['name']
         session.add(editcategory)
         session.commit()
@@ -168,6 +207,11 @@ def deleteItem(category_id, item_id):
 # 10) JSON endpoint
 @app.route('/catalog/JSON/')
 def catalogJSON():
+    engine = create_engine('sqlite:///itemcatalog.db')
+    Base.metadata.bind = engine
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+
     categories = session.query(Category).all()
     Categories = []
     for i in categories:
@@ -179,6 +223,17 @@ def catalogJSON():
         c['items'] = Items
     return jsonify(Categories=Categories)
 
+# 1) Show users
+@app.route('/users/')
+def showUsers():
+    # find all users to pass to html template
+    engine = create_engine('sqlite:///itemcatalog.db')
+    Base.metadata.bind = engine
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+
+    users = session.query(User).all()
+    return render_template('users.html', users=users)
 
 
 

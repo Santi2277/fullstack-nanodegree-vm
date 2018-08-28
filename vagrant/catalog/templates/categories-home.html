@@ -1,12 +1,17 @@
 <!-- For rendering it needs param categories-->
 <html>
-<head></head>
+<head>
+	<meta name="google-signin-client_id" content="571631543423-6celfpf7k764o9u85jfhv10q48o3nqbo.apps.googleusercontent.com">
+	<script src="https://apis.google.com/js/platform.js" async defer></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
 
 	<body>
 
   <div class = 'categories'>
     <h1>Categories</h1>
-    <a href = '/categories/new/'>Add New Category</a>
+
+		<a href = '/categories/new/' id='anc'>Add New Category</a>
 
     <!-- List all categories -->
 	   {% for i in categories %}
@@ -20,10 +25,38 @@
 			 <p>{{i.name}} ({{i.category.name}})</p>
 	{% endfor %}
 
+	<div class="g-signin2" id="signinButton" data-onsuccess="onSignIn"></div>
+<!-- javascript-->
+<script>
+	$('#anc').hide();
+	function onSignIn(googleUser) {
+		// hide button
+		$('#signinButton').hide();
+
+		var profile = googleUser.getBasicProfile();
+		//alert('Name: ' + profile.getName());
+
+		$.post('/gconnect', ""+profile.getName()+"#~#"+profile.getEmail(), function(data, status){alert(""+data+"\n"+status);});
+		$('#anc').show();
+	}
+</script>
+
+	<a href="#" onclick="signOut();">Sign out</a>
+	<!-- javascript -->
+	<script>
+	  function signOut() {
+			$('#signinButton').show();
+			var auth2 = gapi.auth2.getAuthInstance();
+	    auth2.signOut().then(function () {
+	      console.log('User signed out.');
+	    });
+			$.post('/gdisconnect', null, function(data, status){alert(""+data+"\n"+status);});
+			$('#anc').hide();
+	  }
+	</script>
 
 
 </body>
-
 
 
 
