@@ -1,19 +1,23 @@
 
 <html>
+<head>
+  <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
 <body>
 <h1> Edit {{item.name}}</h1>
 
 <form action="{{url_for('editItem', category_id=category.id, item_id=item.id )}}" method = 'POST'>
 
 <!-- Enter the value it has now by default-->
-<p>Name:</p>
+<p style="padding-left: 0px">Name:</p>
 <input type='text' size='30' name='name' value='{{item.name}}'>
 
 <!-- Should be text area element-->
-<p>Description:</p>
+<p style="padding-left: 0px">Description:</p>
 <textarea name='description'>{{item.description}}</textarea>
 
-<p>Category:</p>
+<p style="padding-left: 0px">Category:</p>
 <!-- Select box for categories-->
 <select id="simple" name="categorybox">
   {% for i in categories %}
@@ -29,7 +33,7 @@
 <input type='submit' value='Edit'>
 
 <!-- It should go to -->
-<a href='{{url_for('showItem', category_id=category.id, item_id=item.id) }}'>Cancel</a>
+<a href='{{url_for('showItem', category_id=category.id, item_id=item.id) }}' style="color:#cc3300">Cancel</a>
 </form>
 
 </body>

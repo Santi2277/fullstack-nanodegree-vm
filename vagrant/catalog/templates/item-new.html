@@ -1,19 +1,23 @@
 <html>
+<head>
+  <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
 <body>
 <h1> New {{category.name}} Item </h1>
 
 
 <form action="{{url_for('newItem', category_id=category.id)}}" method = 'POST'>
 
-<p>Name:</p>
+<p style="padding-left: 0px">Name:</p>
 <input type='text' size='30' name='name'>
 
-<p>Description:</p>
+<p style="padding-left: 0px">Description:</p>
 <input type='text' size='30' name='description'>
 
 <input type='submit' value='Create'>
 
 </form>
-<p><a href = '/categories/{{category.id}}/'>back</a></p>
+<p style="padding-left: 0px"><a href = '/categories/{{category.id}}/' style="color:#cc3300">back</a></p>
 </body>
 </html>

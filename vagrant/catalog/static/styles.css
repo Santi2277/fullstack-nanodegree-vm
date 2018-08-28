@@ -1,0 +1,40 @@
+body {
+    background-image: url("https://www.playoncourts.com/cmss_files/imagelibrary/Header_Images/synthetic-gym-flooring-5.jpg");
+
+}
+
+@font-face {
+    font-family: Sports1;
+    src: url(Sports-World-Regular.ttf);
+}
+@font-face {
+    font-family: Sports2;
+    src: url(sportsjersey.ttf);
+}
+h1 {
+  color: #ffffff;
+  font-family: Sports1;
+  font-size: 300%;
+}
+h2 {
+  color: #ffffff;
+  font-family: Sports1;
+  font-size: 200%;
+}
+
+section.container {
+
+}
+div.listcat {
+  width: 35%;
+  float: left;
+}
+
+div.latitems {
+  margin-left: 35%;
+}
+p {
+  font-family: Sports1;
+  padding-left: 30px;
+  font-size: 125%;
+}

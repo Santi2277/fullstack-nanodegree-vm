@@ -1,20 +1,22 @@
 <html>
-<head></head>
+<head>
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+</head>
 
 	<body>
 
     <h1>{{category.name}} ({{itemssize}})</h1>
-    <h2>Items:</h2>
+    
     <!-- List all items in that category -->
 	   {% for i in items %}
 
-        <p>{{i.name}} -> <a href = '/categories/{{category.id}}/items/{{i.id}}/'>go</a></p>
+        <p><a href = '/categories/{{category.id}}/items/{{i.id}}/' style="color:black">{{i.name}}</a></p>
      {% endfor %}
 
 {% if login == 1 %}
-<p><a href = '/categories/{{category.id}}/items/new/'>add item</a></p>
+<p style="padding-left: 0px"><a href = '/categories/{{category.id}}/items/new/' style="color:#99ffcc">add</a></p>
 {% endif %}
-<p><a href = '/categories/'>back</a></p>
+<p style="padding-left: 0px"><a href = '/categories/' style="color:#cc3300">back</a></p>
 </body>
 
 

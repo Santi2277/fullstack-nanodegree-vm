@@ -85,6 +85,10 @@ def showCategory(category_id):
 # 3) Item page
 @app.route('/categories/<int:category_id>/items/<int:item_id>/')
 def showItem(category_id, item_id):
+    engine = create_engine('sqlite:///itemcatalog.db')
+    Base.metadata.bind = engine
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
     # find item descriptionpage
     category = session.query(Category).filter_by(id=category_id).one()
     item = session.query(Item).filter_by(id=item_id).one()
