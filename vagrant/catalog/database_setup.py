@@ -5,7 +5,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
-
+from sqlalchemy.orm import sessionmaker
 
 # let sqlalchemy know that our classes correspond to db tables
 Base = declarative_base()
@@ -18,7 +18,6 @@ class User(Base):
     name = Column(String(80), nullable=False)
     id = Column(Integer, primary_key=True)
     email = Column(String(250))
-    picture = Column(String(250))
 
     # for JSON
     @property
@@ -27,7 +26,6 @@ class User(Base):
             'name': self.name,
             'id': self.id,
             'email': self.email,
-            'picture': self.picture,
         }
 
 class Category(Base):
@@ -36,9 +34,6 @@ class Category(Base):
     # columns
     name = Column(String(80), nullable=False)
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship(User)
-
 
     # for JSON
     @property
@@ -73,11 +68,46 @@ class Item(Base):
             'created_at': self.created_at,
         }
 
-
-
-
 # CONFIG2
-# create database
-engine = create_engine('sqlite:///itemcatalog.db')
-# add classes/tables to database
-Base.metadata.create_all(engine)
+if __name__ == '__main__':
+    # create database
+    engine = create_engine('sqlite:///itemcatalog.db')
+    # add classes/tables to database
+    Base.metadata.create_all(engine)
+
+    # CREATE CATEGORIES
+    Base.metadata.bind = engine
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+
+    newCategory = Category(name = "Baseball")
+    session.add(newCategory)
+    session.commit()
+
+    newCategory = Category(name = "Football")
+    session.add(newCategory)
+    session.commit()
+
+    newCategory = Category(name = "Badminton")
+    session.add(newCategory)
+    session.commit()
+
+    newCategory = Category(name = "Basketball")
+    session.add(newCategory)
+    session.commit()
+
+    newCategory = Category(name = "Tennis")
+    session.add(newCategory)
+    session.commit()
+
+    newCategory = Category(name = "Running")
+    session.add(newCategory)
+    session.commit()
+
+    newCategory = Category(name = "Swimming")
+    session.add(newCategory)
+    session.commit()
+
+    newCategory = Category(name = "Cycling")
+    session.add(newCategory)
+    session.commit()

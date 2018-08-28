@@ -4,8 +4,6 @@
 	<body>
 
     <h1>{{category.name}} ({{itemssize}})</h1>
-    <a href = '/categories/{{category.id}}/edit/'>Edit Category</a>
-    <a href = '/categories/{{category.id}}/delete/'>Delete Category</a>
     <h2>Items:</h2>
     <!-- List all items in that category -->
 	   {% for i in items %}
@@ -13,7 +11,9 @@
         <p>{{i.name}} -> <a href = '/categories/{{category.id}}/items/{{i.id}}/'>go</a></p>
      {% endfor %}
 
+{% if login == 1 %}
 <p><a href = '/categories/{{category.id}}/items/new/'>add item</a></p>
+{% endif %}
 <p><a href = '/categories/'>back</a></p>
 </body>
 

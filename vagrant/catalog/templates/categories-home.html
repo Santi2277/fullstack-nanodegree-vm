@@ -11,8 +11,6 @@
   <div class = 'categories'>
     <h1>Categories</h1>
 
-		<a href = '/categories/new/' id='anc'>Add New Category</a>
-
     <!-- List all categories -->
 	   {% for i in categories %}
 
@@ -28,7 +26,6 @@
 	<div class="g-signin2" id="signinButton" data-onsuccess="onSignIn"></div>
 <!-- javascript-->
 <script>
-	$('#anc').hide();
 	function onSignIn(googleUser) {
 		// hide button
 		$('#signinButton').hide();
@@ -37,7 +34,6 @@
 		//alert('Name: ' + profile.getName());
 
 		$.post('/gconnect', ""+profile.getName()+"#~#"+profile.getEmail(), function(data, status){alert(""+data+"\n"+status);});
-		$('#anc').show();
 	}
 </script>
 
@@ -51,7 +47,6 @@
 	      console.log('User signed out.');
 	    });
 			$.post('/gdisconnect', null, function(data, status){alert(""+data+"\n"+status);});
-			$('#anc').hide();
 	  }
 	</script>
 
