@@ -10,6 +10,7 @@ from sqlalchemy.orm import sessionmaker
 # let sqlalchemy know that our classes correspond to db tables
 Base = declarative_base()
 
+
 # CLASSES
 class User(Base):
     # table representation
@@ -28,6 +29,7 @@ class User(Base):
             'email': self.email,
         }
 
+
 class Category(Base):
     # table representation
     __tablename__ = 'category'
@@ -38,12 +40,13 @@ class Category(Base):
     # for JSON
     @property
     def serialize(self):
-        #return dict(name=self.name, id=self.id, items=[])
+        # return dict(name=self.name, id=self.id, items=[])
         return {
             'name': self.name,
             'id': self.id,
             'items': [],
         }
+
 
 class Item(Base):
     # table representation
@@ -80,34 +83,34 @@ if __name__ == '__main__':
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
 
-    newCategory = Category(name = "Baseball")
+    newCategory = Category(name="Baseball")
     session.add(newCategory)
     session.commit()
 
-    newCategory = Category(name = "Football")
+    newCategory = Category(name="Football")
     session.add(newCategory)
     session.commit()
 
-    newCategory = Category(name = "Badminton")
+    newCategory = Category(name="Badminton")
     session.add(newCategory)
     session.commit()
 
-    newCategory = Category(name = "Basketball")
+    newCategory = Category(name="Basketball")
     session.add(newCategory)
     session.commit()
 
-    newCategory = Category(name = "Tennis")
+    newCategory = Category(name="Tennis")
     session.add(newCategory)
     session.commit()
 
-    newCategory = Category(name = "Running")
+    newCategory = Category(name="Running")
     session.add(newCategory)
     session.commit()
 
-    newCategory = Category(name = "Swimming")
+    newCategory = Category(name="Swimming")
     session.add(newCategory)
     session.commit()
 
-    newCategory = Category(name = "Cycling")
+    newCategory = Category(name="Cycling")
     session.add(newCategory)
     session.commit()
