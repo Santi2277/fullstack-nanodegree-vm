@@ -170,6 +170,10 @@ def editItem(category_id, item_id):
 # 6) Delete item
 @app.route('/categories/<int:category_id>/items/<int:item_id>/delete/', methods=['GET', 'POST'])
 def deleteItem(category_id, item_id):
+    engine = create_engine('sqlite:///itemcatalog.db')
+    Base.metadata.bind = engine
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
     deleteitem = session.query(Item).filter_by(id = item_id).one()
     # POST delete that item and return to homepage
     if request.method == 'POST':

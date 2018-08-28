@@ -12,12 +12,12 @@ body {
     src: url(sportsjersey.ttf);
 }
 h1 {
-  color: #ffffff;
+  color: #d6d6c2;
   font-family: Sports1;
   font-size: 300%;
 }
 h2 {
-  color: #ffffff;
+  color: #ebebe0;
   font-family: Sports1;
   font-size: 200%;
 }
@@ -26,15 +26,15 @@ section.container {
 
 }
 div.listcat {
-  width: 35%;
+  width: 30%;
   float: left;
 }
 
 div.latitems {
-  margin-left: 35%;
+  margin-left: 30%;
 }
 p {
   font-family: Sports1;
   padding-left: 30px;
-  font-size: 125%;
+  font-size: 135%;
 }

@@ -6,11 +6,11 @@
 	<body>
 
     <h1>{{category.name}} ({{itemssize}})</h1>
-    
+
     <!-- List all items in that category -->
 	   {% for i in items %}
 
-        <p><a href = '/categories/{{category.id}}/items/{{i.id}}/' style="color:black">{{i.name}}</a></p>
+        <p><a href = '/categories/{{category.id}}/items/{{i.id}}/' style="color:#ebebe0">{{i.name}}</a></p>
      {% endfor %}
 
 {% if login == 1 %}
