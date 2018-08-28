@@ -19,6 +19,7 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+
 # User identification with google
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
@@ -42,12 +43,14 @@ def gconnect():
         session.commit()
     return ""+login_session['username']+"connected"
 
+
 # Disconnect user login session (google)
 @app.route('/gdisconnect', methods=['POST'])
 def gdisconnect():
     login_session['username'] = None
     login_session['email'] = None
     return "no user connected now"
+
 
 # 1) Show homepage (categories)
 @app.route('/')
@@ -62,8 +65,9 @@ def showCategories():
     # find latest added items too
     latestitems = session.query(Item).order_by("created_at desc").limit(3)
     return render_template('categories-home.html',
-                           categories = categories,
+                           categories=categories,
                            latestitems=latestitems)
+
 
 # 2) Category page
 @app.route('/categories/<int:category_id>/')
@@ -80,15 +84,16 @@ def showCategory(category_id):
     if ('username' not in login_session):
         login = 0
     else:
-        if login_session['username'] == None:
+        if login_session['username'] is None:
             login = 0
         else:
             login = 1
     return render_template('category.html',
-                           category = category,
-                           items = items,
+                           category=category,
+                           items=items,
                            itemssize=itemssize,
                            login=login)
+
 
 # 3) Item page
 @app.route('/categories/<int:category_id>/items/<int:item_id>/')
@@ -104,7 +109,7 @@ def showItem(category_id, item_id):
     if ('username' not in login_session):
         creator = 0
     else:
-        if login_session['username'] == None:
+        if login_session['username'] is None:
             creator = 0
         else:
             if ((item.user.name == login_session['username']) and
@@ -113,13 +118,14 @@ def showItem(category_id, item_id):
             else:
                 creator = 0
     return render_template('item.html',
-                           category = category,
-                           item = item,
+                           category=category,
+                           item=item,
                            creator=creator)
+
 
 # 4) New item
 @app.route('/categories/<int:category_id>/items/new/',
-    methods=['GET', 'POST'])
+           methods=['GET', 'POST'])
 def newItem(category_id):
     engine = create_engine('sqlite:///itemcatalog.db')
     Base.metadata.bind = engine
@@ -132,43 +138,44 @@ def newItem(category_id):
             # flash("Must be logged in to add items")
             return redirect(url_for('showCategory', category_id=category_id))
         else:
-            if login_session['username'] == None:
+            if login_session['username'] is None:
                 # flash("Must be logged in to add items")
                 return redirect(url_for('showCategory',
                                         category_id=category_id))
             else:
                 category = session.query(
                            Category
-                           ).filter_by(id = category_id).one()
+                           ).filter_by(id=category_id).one()
                 user = session.query(
                         User
-                        ).filter_by(email = login_session['email']).one()
-                newItem = Item(name = ""+request.form['name'],
-                               description = ""+request.form['description'],
-                               user = user,
-                               category = category,
-                               created_at = datetime.datetime.now())
+                        ).filter_by(email=login_session['email']).one()
+                newItem = Item(name=""+request.form['name'],
+                               description=""+request.form['description'],
+                               user=user,
+                               category=category,
+                               created_at=datetime.datetime.now())
                 session.add(newItem)
                 session.commit()
                 return redirect(url_for('showCategory',
                                         category_id=category_id))
     # GET method show add new item template
     else:
-        category = session.query(Category).filter_by(id = category_id).one()
-        return render_template('item-new.html', category = category)
+        category = session.query(Category).filter_by(id=category_id).one()
+        return render_template('item-new.html', category=category)
+
 
 # 5) Edit item
 @app.route('/categories/<int:category_id>/items/<int:item_id>/edit/',
-    methods=['GET', 'POST'])
+           methods=['GET', 'POST'])
 def editItem(category_id, item_id):
-    edititem = session.query(Item).filter_by(id = item_id).one()
+    edititem = session.query(Item).filter_by(id=item_id).one()
     # POST edit the item with the form given and return to category
     if request.method == 'POST':
         if ('username' not in login_session):
             # flash("Must be logged in and item owner to edit item")
             return redirect(url_for('showCategory', category_id=category_id))
         else:
-            if login_session['username'] == None:
+            if login_session['username'] is None:
                 # flash("Must be logged in and item owner to edit item")
                 return redirect(url_for('showCategory',
                                         category_id=category_id))
@@ -178,7 +185,7 @@ def editItem(category_id, item_id):
                     category = session.query(
                                Category
                                ).filter_by(
-                               name = ""+request.form['categorybox']
+                               name=""+request.form['categorybox']
                                ).one()
                     edititem.name = ""+request.form['name']
                     edititem.description = ""+request.form['description']
@@ -187,36 +194,37 @@ def editItem(category_id, item_id):
                     session.commit()
                     return redirect(url_for('showItem',
                                             category_id=category_id,
-                                            item_id=item_id ))
+                                            item_id=item_id))
                 else:
                     # flash("Must be logged in and item owner to edit item")
                     return redirect(url_for('showCategory',
                                             category_id=category_id))
     # GET pass item and category to edit item template
     else:
-        category1 = session.query(Category).filter_by(id = category_id).one()
+        category1 = session.query(Category).filter_by(id=category_id).one()
         categories = session.query(Category).all()
         return render_template('item-edit.html',
-                               item = edititem,
+                               item=edititem,
                                category=category1,
-                               categories = categories)
+                               categories=categories)
+
 
 # 6) Delete item
 @app.route('/categories/<int:category_id>/items/<int:item_id>/delete/',
-    methods=['GET', 'POST'])
+           methods=['GET', 'POST'])
 def deleteItem(category_id, item_id):
     engine = create_engine('sqlite:///itemcatalog.db')
     Base.metadata.bind = engine
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
-    deleteitem = session.query(Item).filter_by(id = item_id).one()
+    deleteitem = session.query(Item).filter_by(id=item_id).one()
     # POST delete that item and return to homepage
     if request.method == 'POST':
         if ('username' not in login_session):
             # flash("Must be logged in and item owner to delete item")
             return redirect(url_for('showCategory', category_id=category_id))
         else:
-            if login_session['username'] == None:
+            if login_session['username'] is None:
                 # flash("Must be logged in and item owner to delete item")
                 return redirect(url_for('showCategory',
                                         category_id=category_id))
@@ -235,8 +243,9 @@ def deleteItem(category_id, item_id):
     # GET pass item to delete item template
     else:
         return render_template('item-delete.html',
-                                item = deleteitem,
-                                category_id=category_id)
+                               item=deleteitem,
+                               category_id=category_id)
+
 
 # 7) JSON endpoint
 @app.route('/catalog/JSON/')
@@ -251,10 +260,11 @@ def catalogJSON():
     for i in categories:
         Categories.append(i.serialize)
     for c in Categories:
-        items = session.query(Item).filter_by(category_id = c['id']).all()
-        Items=[i.serialize for i in items]
+        items = session.query(Item).filter_by(category_id=c['id']).all()
+        Items = [i.serialize for i in items]
         c['items'] = Items
     return jsonify(Categories=Categories)
+
 
 # 8) Show users (this page is for web creator additional info only)
 @app.route('/users/')
