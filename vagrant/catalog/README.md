@@ -48,6 +48,17 @@ Run  `python item-catalog.py` to enable the web server.
 You can access in your web browser with "localhost:8000".
 
 
+## JSON endpoints
+
+The following JSON endpoints have been created:
+
+- Full catalog: path `/categories/JSON/`
+
+- Category: `/categories/<int:category_id>/JSON/`
+
+- Item: `/categories/<int:category_id>/items/<int:item_id>/JSON/`
+
+
 ## Additional Comments
 
 To erase database delete created files: itemcatalog.db and database_setup.pyc.
