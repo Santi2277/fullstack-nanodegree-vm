@@ -43,7 +43,6 @@
 			// hide button
 			$('#signinButton').hide();
 			$('#signoutButton').show();
-			$('#flashmessage').hide();
 			var profile = googleUser.getBasicProfile();
 			//alert('Name: ' + profile.getName());
 			$.post('/gconnect', ""+profile.getName()+"#~#"+profile.getEmail(), function(data, status){});

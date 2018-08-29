@@ -53,29 +53,20 @@ def gdisconnect():
     login_session['email'] = None
     return "no user connected now"
 
-# decorator 1 (login required)
+# decorator (login required)
 def login_required(f):
     @wraps(f)
     def x(*args, **kwargs):
         if 'username' not in login_session:
-            flash("Login before (adding an item to a category)!!!")
+            flash("Login before (adding, editing or deleting an item)!!!")
             return redirect('/categories/')
         else:
             if login_session['username'] is None:
-                flash("Login before (adding an item to a category)!!!")
+                flash("Login before (adding, editing or deleting an item)!!!")
                 return redirect('/categories/')
             else:
                 return f(*args, **kwargs)
     return x
-
-#decorator 2 (being item owner required)
-#def owner_required(f):
-#    @wraps(f)
-#    def x(*args, **kwargs):
-#        if 'username' not in login_session:
-#            return redirect('/login')
-#        return f(*args, **kwargs)
-#    return x
 
 
 # 1) Show homepage (categories)
@@ -184,84 +175,75 @@ def newItem(category_id):
 # 5) Edit item
 @app.route('/categories/<int:category_id>/items/<int:item_id>/edit/',
            methods=['GET', 'POST'])
+@login_required
 def editItem(category_id, item_id):
+    engine = create_engine('sqlite:///itemcatalog.db')
+    Base.metadata.bind = engine
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+    deleteitem = session.query(Item).filter_by(id=item_id).one()
     edititem = session.query(Item).filter_by(id=item_id).one()
-    # POST edit the item with the form given and return to category
-    if request.method == 'POST':
-        if ('username' not in login_session):
-            # flash("Must be logged in and item owner to edit item")
-            return redirect(url_for('showCategory', category_id=category_id))
-        else:
-            if login_session['username'] is None:
-                # flash("Must be logged in and item owner to edit item")
-                return redirect(url_for('showCategory',
-                                        category_id=category_id))
-            else:
+    # item owner required
+    if ((edititem.user.name == login_session['username']) and
+            (edititem.user.email == login_session['email'])):
+            # POST edit the item with the form given and return to category
+            if request.method == 'POST':
                 if ((edititem.user.name == login_session['username']) and
-                        (edititem.user.email == login_session['email'])):
+                    (edititem.user.email == login_session['email'])):
                     category = session.query(
-                               Category
-                               ).filter_by(
-                               name=""+request.form['categorybox']
-                               ).one()
+                        Category
+                        ).filter_by(
+                        name=""+request.form['categorybox']
+                        ).one()
                     edititem.name = ""+request.form['name']
                     edititem.description = ""+request.form['description']
                     edititem.category = category
                     session.add(edititem)
                     session.commit()
                     return redirect(url_for('showItem',
-                                            category_id=category_id,
-                                            item_id=item_id))
-                else:
-                    # flash("Must be logged in and item owner to edit item")
-                    return redirect(url_for('showCategory',
-                                            category_id=category_id))
-    # GET pass item and category to edit item template
+                                    category_id=category_id,
+                                    item_id=item_id))
+            # GET pass item and category to edit item template
+            else:
+                category1 = session.query(Category).filter_by(id=category_id).one()
+                categories = session.query(Category).all()
+                return render_template('item-edit.html',
+                                       item=edititem,
+                                       category=category1,
+                                       categories=categories)
+    # not item owner
     else:
-        category1 = session.query(Category).filter_by(id=category_id).one()
-        categories = session.query(Category).all()
-        return render_template('item-edit.html',
-                               item=edititem,
-                               category=category1,
-                               categories=categories)
-
+        flash("Not item owner (necessary for editing or deleting it)!!!")
+        return redirect('/categories/')
 
 # 6) Delete item
 @app.route('/categories/<int:category_id>/items/<int:item_id>/delete/',
            methods=['GET', 'POST'])
+@login_required
 def deleteItem(category_id, item_id):
     engine = create_engine('sqlite:///itemcatalog.db')
     Base.metadata.bind = engine
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
     deleteitem = session.query(Item).filter_by(id=item_id).one()
-    # POST delete that item and return to homepage
-    if request.method == 'POST':
-        if ('username' not in login_session):
-            # flash("Must be logged in and item owner to delete item")
-            return redirect(url_for('showCategory', category_id=category_id))
+    # item owner
+    if ((deleteitem.user.name == login_session['username']) and
+            (deleteitem.user.email == login_session['email'])):
+        # POST delete that item and return to homepage
+        if request.method == 'POST':
+            session.delete(deleteitem)
+            session.commit()
+            return redirect(url_for('showCategory',
+                                    category_id=category_id))
+        # GET pass item to delete item template
         else:
-            if login_session['username'] is None:
-                # flash("Must be logged in and item owner to delete item")
-                return redirect(url_for('showCategory',
-                                        category_id=category_id))
-            else:
-                if ((deleteitem.user.name == login_session['username']) and
-                        (deleteitem.user.email == login_session['email'])):
-                    session.delete(deleteitem)
-                    session.commit()
-                    # flash("Item deleted")
-                    return redirect(url_for('showCategory',
-                                            category_id=category_id))
-                else:
-                    # flash("Must be logged in and item owner to delete item")
-                    return redirect(url_for('showCategory',
-                                            category_id=category_id))
-    # GET pass item to delete item template
+            return render_template('item-delete.html',
+                                   item=deleteitem,
+                                   category_id=category_id)
+    # not item owner
     else:
-        return render_template('item-delete.html',
-                               item=deleteitem,
-                               category_id=category_id)
+        flash("Not item owner (necessary for editing or deleting it)!!!")
+        return redirect('/categories/')
 
 
 # 7) JSON endpoint
