@@ -10,6 +10,14 @@
 	<body>
 		<!-- Content to show -->
 		<h1>Categories</h1>
+		<!-- Show flash messages -->
+		{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<!--{% for message in messages %}-->
+				<p style="color: red; font-size: 125%;" id="flashmessage"><img src="https://cdn2.iconfinder.com/data/icons/color-svg-vector-icons-2/512/error_warning_alert_attention-512.png" width="25" height="25"><img src="https://cdn2.iconfinder.com/data/icons/color-svg-vector-icons-2/512/error_warning_alert_attention-512.png" width="25" height="25"><img src="https://cdn2.iconfinder.com/data/icons/color-svg-vector-icons-2/512/error_warning_alert_attention-512.png" width="25" height="25"> {{messages[0]}} <img src="https://cdn2.iconfinder.com/data/icons/color-svg-vector-icons-2/512/error_warning_alert_attention-512.png" width="25" height="25"><img src="https://cdn2.iconfinder.com/data/icons/color-svg-vector-icons-2/512/error_warning_alert_attention-512.png" width="25" height="25"><img src="https://cdn2.iconfinder.com/data/icons/color-svg-vector-icons-2/512/error_warning_alert_attention-512.png" width="25" height="25"></p>
+			<!--{% endfor %}-->
+		{% endif %}
+		{% endwith %}
 		<section class="container">
 			<div class = 'listcat'>
     		<!-- List all categories -->
@@ -35,6 +43,7 @@
 			// hide button
 			$('#signinButton').hide();
 			$('#signoutButton').show();
+			$('#flashmessage').hide();
 			var profile = googleUser.getBasicProfile();
 			//alert('Name: ' + profile.getName());
 			$.post('/gconnect', ""+profile.getName()+"#~#"+profile.getEmail(), function(data, status){});

@@ -9,6 +9,7 @@ import datetime
 from flask import session as login_session
 import random
 import string
+from functools import wraps
 
 # using flask micro-framework, creating app
 app = Flask(__name__)
@@ -51,6 +52,30 @@ def gdisconnect():
     login_session['username'] = None
     login_session['email'] = None
     return "no user connected now"
+
+# decorator 1 (login required)
+def login_required(f):
+    @wraps(f)
+    def x(*args, **kwargs):
+        if 'username' not in login_session:
+            flash("Login before (adding an item to a category)!!!")
+            return redirect('/categories/')
+        else:
+            if login_session['username'] is None:
+                flash("Login before (adding an item to a category)!!!")
+                return redirect('/categories/')
+            else:
+                return f(*args, **kwargs)
+    return x
+
+#decorator 2 (being item owner required)
+#def owner_required(f):
+#    @wraps(f)
+#    def x(*args, **kwargs):
+#        if 'username' not in login_session:
+#            return redirect('/login')
+#        return f(*args, **kwargs)
+#    return x
 
 
 # 1) Show homepage (categories)
@@ -127,6 +152,7 @@ def showItem(category_id, item_id):
 # 4) New item
 @app.route('/categories/<int:category_id>/items/new/',
            methods=['GET', 'POST'])
+@login_required
 def newItem(category_id):
     engine = create_engine('sqlite:///itemcatalog.db')
     Base.metadata.bind = engine
@@ -134,31 +160,21 @@ def newItem(category_id):
     session = DBSession()
     # POST method, add the new item then go to homepage
     if request.method == 'POST':
-        # only add item if user is authenticated
-        if ('username' not in login_session):
-            # flash("Must be logged in to add items")
-            return redirect(url_for('showCategory', category_id=category_id))
-        else:
-            if login_session['username'] is None:
-                # flash("Must be logged in to add items")
-                return redirect(url_for('showCategory',
-                                        category_id=category_id))
-            else:
-                category = session.query(
-                           Category
-                           ).filter_by(id=category_id).one()
-                user = session.query(
-                        User
-                        ).filter_by(email=login_session['email']).one()
-                newItem = Item(name=""+request.form['name'],
-                               description=""+request.form['description'],
-                               user=user,
-                               category=category,
-                               created_at=datetime.datetime.now())
-                session.add(newItem)
-                session.commit()
-                return redirect(url_for('showCategory',
-                                        category_id=category_id))
+        category = session.query(
+                   Category
+                   ).filter_by(id=category_id).one()
+        user = session.query(
+                User
+                ).filter_by(email=login_session['email']).one()
+        newItem = Item(name=""+request.form['name'],
+                       description=""+request.form['description'],
+                       user=user,
+                       category=category,
+                       created_at=datetime.datetime.now())
+        session.add(newItem)
+        session.commit()
+        return redirect(url_for('showCategory',
+                                category_id=category_id))
     # GET method show add new item template
     else:
         category = session.query(Category).filter_by(id=category_id).one()
@@ -277,6 +293,12 @@ def showUsers():
     session = DBSession()
     users = session.query(User).all()
     return render_template('users.html', users=users)
+
+
+# Testing things
+@app.route('/login', methods=['GET'])
+def login():
+    return "user must log in first!"
 
 # initialize server in localhost port 8000
 if __name__ == '__main__':
