@@ -53,6 +53,7 @@ def gdisconnect():
     login_session['email'] = None
     return "no user connected now"
 
+
 # decorator (login required)
 def login_required(f):
     @wraps(f)
@@ -189,7 +190,7 @@ def editItem(category_id, item_id):
             # POST edit the item with the form given and return to category
             if request.method == 'POST':
                 if ((edititem.user.name == login_session['username']) and
-                    (edititem.user.email == login_session['email'])):
+                        (edititem.user.email == login_session['email'])):
                     category = session.query(
                         Category
                         ).filter_by(
@@ -205,7 +206,9 @@ def editItem(category_id, item_id):
                                     item_id=item_id))
             # GET pass item and category to edit item template
             else:
-                category1 = session.query(Category).filter_by(id=category_id).one()
+                category1 = session.query(
+                            Category
+                            ).filter_by(id=category_id).one()
                 categories = session.query(Category).all()
                 return render_template('item-edit.html',
                                        item=edititem,
@@ -215,6 +218,7 @@ def editItem(category_id, item_id):
     else:
         flash("Not item owner (necessary for editing or deleting it)!!!")
         return redirect('/categories/')
+
 
 # 6) Delete item
 @app.route('/categories/<int:category_id>/items/<int:item_id>/delete/',
@@ -246,9 +250,9 @@ def deleteItem(category_id, item_id):
         return redirect('/categories/')
 
 
-# 7) JSON endpoint
-@app.route('/catalog/JSON/')
-def catalogJSON():
+# 7) JSON endpoint for categories
+@app.route('/categories/JSON/')
+def categoriesJSON():
     engine = create_engine('sqlite:///itemcatalog.db')
     Base.metadata.bind = engine
     DBSession = sessionmaker(bind=engine)
@@ -277,10 +281,33 @@ def showUsers():
     return render_template('users.html', users=users)
 
 
-# Testing things
-@app.route('/login', methods=['GET'])
-def login():
-    return "user must log in first!"
+# 9) JSON endpoint for category
+@app.route('/categories/<int:category_id>/JSON/')
+def categoryJSON(category_id):
+    engine = create_engine('sqlite:///itemcatalog.db')
+    Base.metadata.bind = engine
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+    # find category and its items to pass in json format
+    category = session.query(Category).filter_by(id=category_id).one()
+    categoryjson = category.serialize
+    items = session.query(Item).filter_by(category_id=category_id).all()
+    Items = [i.serialize for i in items]
+    categoryjson['items'] = Items
+    return jsonify(Categoryjson=categoryjson)
+
+
+# 10) JSON endpoint for item
+@app.route('/categories/<int:category_id>/items/<int:item_id>/JSON/')
+def itemJSON(category_id, item_id):
+    engine = create_engine('sqlite:///itemcatalog.db')
+    Base.metadata.bind = engine
+    DBSession = sessionmaker(bind=engine)
+    session = DBSession()
+    # fin item and pass in json format
+    item = session.query(Item).filter_by(id=item_id).one()
+    itemjson = item.serialize
+    return jsonify(Itemjson=itemjson)
 
 # initialize server in localhost port 8000
 if __name__ == '__main__':
